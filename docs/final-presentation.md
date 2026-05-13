@@ -101,10 +101,17 @@ Die Reihenfolge folgt den 4 LV-Pflichtpunkten aus der Aufgabenstellung. Jede Sek
 
 | Metrik | Wert |
 |---|---|
-| Sprints durchgeführt | 4 (Tag 1: Planung · Tag 2: Sprint 1+2 · Tag 3: Sprint 3+4) |
-| User Stories closed | 13 / 24 (54%) |
+| Sprints durchgeführt | **5** (Tag 1: Planung · Tag 2: Sprint 1+2 · Tag 3: Sprint 3+4+5) |
+| User Stories closed | **14 / 25** (56%) — eine zusätzliche Story (US-25) wurde während Sprint 5 angelegt + abgeschlossen |
 | Features (Milestones) berührt | 5 von 7 (F1, F2, F3, F4, F5) |
-| Pull Requests gemerged | 2 (PR #25 Sprint 3, PR #26 Sprint 4) |
-| Bugs im PR-Review gefangen | 1 (RerunException-Rollback in Invite) |
-| Retrospektiven dokumentiert | 2 (Tag 2: 5 Fragen / Tag 3: 3 Fragen, beide auf Deutsch fürs Projektbericht) |
-| Lines of Code (App-Files) | ~600 (app.py + db.py + auth.py + 2 pages + schema.sql) |
+| Pull Requests gemerged | **3** (PR #25 Sprint 3 · PR #26 Sprint 4 · PR #28 Sprint 5) |
+| Bugs im PR-Review gefangen | **2** (Sprint 3: RerunException-Rollback bei Invite · Sprint 5: Item-Row-Alignment war von PO im Sprint-4-Review entdeckt) |
+| Retrospektiven dokumentiert | **3** (Tag 2: 5 LV-Fragen · Tag 3: 3 LV-Fragen · Abschluss: 3 LV-Fragen adaptiert — alle auf Deutsch fürs Projektbericht) |
+| Lines of Code (App-Files) | ~650 (app.py + db.py + auth.py + 2 pages + schema.sql) |
+| Backlog-Stories offen | **11** (bewusst dokumentiert, kein Carry-over-Versagen): US-04 · US-07 · US-08 · US-11 · US-16 · US-18 · US-20 · US-21 · US-22 · US-23 · US-24 |
+
+### Erweitertes Lessons-Learned-Set (Bonus 4: Confidence-Gating)
+
+Falls im Plenum Zeit ist, kurz nennen:
+
+> **Confidence-Gating vor Sprint-Start:** Vor Sprint 5 hat das Team explizit pro Story den Implementierungs-Confidence-Level bewertet (UI-Fix 100% / Added-By 100% / Edit-Item ~95%). Die einzige Story unter 100% (Edit-Item) wurde aktiv ans Backlog zurückgegeben statt sie hoffnungs-getrieben mitzuziehen. Das ist Scrum-Risiko-Management auf Story-Ebene und hat uns davor bewahrt, einen subtilen Bug in den finalen Sprint einzuschleppen.
