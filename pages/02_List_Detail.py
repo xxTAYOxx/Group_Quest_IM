@@ -1,4 +1,4 @@
-"""List Detail page — add, check off, and delete items on a shopping list."""
+"""List Detail page — add, check off, and delete items. Owner can invite collaborators."""
 from __future__ import annotations
 
 import streamlit as st
@@ -27,8 +27,19 @@ if not list_id:
 
 with get_conn() as conn:
     lst = conn.execute(
-        "SELECT id, name FROM lists WHERE id = ? AND owner_id = ?",
-        (list_id, user["id"]),
+        """
+        SELECT l.id, l.name, l.owner_id, u.username AS owner_username
+        FROM lists l
+        JOIN users u ON u.id = l.owner_id
+        WHERE l.id = ? AND (
+            l.owner_id = ?
+            OR EXISTS (
+                SELECT 1 FROM list_collaborators
+                WHERE list_id = l.id AND user_id = ?
+            )
+        )
+        """,
+        (list_id, user["id"], user["id"]),
     ).fetchone()
 
 if not lst:
@@ -36,8 +47,75 @@ if not lst:
     st.page_link("pages/01_My_Lists.py", label="← Back to My Lists")
     st.stop()
 
+is_owner = lst["owner_id"] == user["id"]
+
+with get_conn() as conn:
+    collaborators = conn.execute(
+        """
+        SELECT u.id, u.username
+        FROM list_collaborators c
+        JOIN users u ON u.id = c.user_id
+        WHERE c.list_id = ?
+        ORDER BY u.username
+        """,
+        (list_id,),
+    ).fetchall()
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("**👥 Members**")
+owner_marker = " *(you)*" if is_owner else ""
+st.sidebar.markdown(f"- **{lst['owner_username']}** _(owner)_{owner_marker}")
+for c in collaborators:
+    you_marker = " *(you)*" if c["id"] == user["id"] else ""
+    st.sidebar.markdown(f"- {c['username']}{you_marker}")
+
 st.page_link("pages/01_My_Lists.py", label="← Back to My Lists")
+title_suffix = "" if is_owner else f" _(shared by {lst['owner_username']})_"
 st.title(f"📝 {lst['name']}")
+if not is_owner:
+    st.caption(f"Shared with you by **{lst['owner_username']}**")
+
+if is_owner:
+    with st.expander("👥 Invite collaborator", expanded=False):
+        with st.form("invite_form", clear_on_submit=True):
+            invite_username = st.text_input(
+                "Username to invite",
+                placeholder="e.g. anna",
+            )
+            invite_submit = st.form_submit_button(
+                "Send invitation", use_container_width=True
+            )
+        if invite_submit:
+            uname = invite_username.strip()
+            if not uname:
+                st.error("Please enter a username.")
+            elif uname == user["username"]:
+                st.error("You can't add yourself as a collaborator.")
+            else:
+                with get_conn() as conn:
+                    target = conn.execute(
+                        "SELECT id FROM users WHERE username = ?",
+                        (uname,),
+                    ).fetchone()
+                    if not target:
+                        st.error(f"No user named '{uname}' exists.")
+                    else:
+                        already = conn.execute(
+                            "SELECT 1 FROM list_collaborators WHERE list_id = ? AND user_id = ?",
+                            (list_id, target["id"]),
+                        ).fetchone()
+                        if already:
+                            st.error(f"'{uname}' is already a collaborator.")
+                        else:
+                            conn.execute(
+                                """
+                                INSERT INTO list_collaborators (list_id, user_id, invited_by)
+                                VALUES (?, ?, ?)
+                                """,
+                                (list_id, target["id"], user["id"]),
+                            )
+                            st.success(f"Invited '{uname}' to this list.")
+                            st.rerun()
 
 with st.expander("➕ Add item", expanded=False):
     with st.form("add_item_form", clear_on_submit=True):

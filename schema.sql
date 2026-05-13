@@ -30,3 +30,13 @@ CREATE TABLE IF NOT EXISTS items (
 );
 
 CREATE INDEX IF NOT EXISTS idx_items_list ON items(list_id);
+
+CREATE TABLE IF NOT EXISTS list_collaborators (
+    list_id    INTEGER NOT NULL REFERENCES lists(id) ON DELETE CASCADE,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    invited_by INTEGER NOT NULL REFERENCES users(id),
+    invited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (list_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_collab_user ON list_collaborators(user_id);
