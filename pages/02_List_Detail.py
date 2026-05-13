@@ -70,10 +70,17 @@ for c in collaborators:
     st.sidebar.markdown(f"- {c['username']}{you_marker}")
 
 st.page_link("pages/01_My_Lists.py", label="← Back to My Lists")
-title_suffix = "" if is_owner else f" _(shared by {lst['owner_username']})_"
 st.title(f"📝 {lst['name']}")
 if not is_owner:
     st.caption(f"Shared with you by **{lst['owner_username']}**")
+
+feedback = st.session_state.pop("invite_feedback", None)
+if feedback:
+    kind, msg = feedback
+    if kind == "success":
+        st.success(msg)
+    else:
+        st.error(msg)
 
 if is_owner:
     with st.expander("👥 Invite collaborator", expanded=False):
@@ -88,24 +95,33 @@ if is_owner:
         if invite_submit:
             uname = invite_username.strip()
             if not uname:
-                st.error("Please enter a username.")
-            elif uname == user["username"]:
-                st.error("You can't add yourself as a collaborator.")
+                st.session_state["invite_feedback"] = ("error", "Please enter a username.")
+            elif uname.lower() == user["username"].lower():
+                st.session_state["invite_feedback"] = (
+                    "error",
+                    "You can't add yourself as a collaborator.",
+                )
             else:
                 with get_conn() as conn:
                     target = conn.execute(
-                        "SELECT id FROM users WHERE username = ?",
+                        "SELECT id, username FROM users WHERE LOWER(username) = LOWER(?)",
                         (uname,),
                     ).fetchone()
                     if not target:
-                        st.error(f"No user named '{uname}' exists.")
+                        st.session_state["invite_feedback"] = (
+                            "error",
+                            f"No user named '{uname}' exists.",
+                        )
                     else:
                         already = conn.execute(
                             "SELECT 1 FROM list_collaborators WHERE list_id = ? AND user_id = ?",
                             (list_id, target["id"]),
                         ).fetchone()
                         if already:
-                            st.error(f"'{uname}' is already a collaborator.")
+                            st.session_state["invite_feedback"] = (
+                                "error",
+                                f"'{target['username']}' is already a collaborator.",
+                            )
                         else:
                             conn.execute(
                                 """
@@ -114,8 +130,11 @@ if is_owner:
                                 """,
                                 (list_id, target["id"], user["id"]),
                             )
-                            st.success(f"Invited '{uname}' to this list.")
-                            st.rerun()
+                            st.session_state["invite_feedback"] = (
+                                "success",
+                                f"Invited '{target['username']}' to this list.",
+                            )
+            st.rerun()
 
 with st.expander("➕ Add item", expanded=False):
     with st.form("add_item_form", clear_on_submit=True):
