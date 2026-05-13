@@ -3,7 +3,7 @@
 **Project:** ListMate
 **Date:** 2026-05-13
 **Sprint Duration:** ~70 min effective coding
-**Team Capacity:** 2 Developers × ~70 min
+**Team Capacity:** 3 Developers × ~70 min
 
 ---
 
@@ -23,8 +23,9 @@ This is the minimum viable end-to-end slice that proves the foundation works: au
 | 2 | US-02 Login | [#2](https://github.com/xxTAYOxx/Group_Quest_IM/issues/2) | S | P0 | Direct follow-up to registration |
 | 3 | US-03 Logout | [#3](https://github.com/xxTAYOxx/Group_Quest_IM/issues/3) | XS | P0 | Trivial closure of auth flow |
 | 4 | US-05 Create List | [#5](https://github.com/xxTAYOxx/Group_Quest_IM/issues/5) | M | P0 | Second half of the Sprint Goal |
+| 5 | US-06 My Lists | [#6](https://github.com/xxTAYOxx/Group_Quest_IM/issues/6) | S | P0 | Pulled in due to 3-dev capacity — makes Sprint Goal demo-able |
 
-**Total commitment:** 2× M + 1× S + 1× XS ≈ realistic for 2 devs × 70 min.
+**Total commitment:** 2× M + 2× S + 1× XS ≈ realistic for 3 devs × 70 min.
 
 ---
 
@@ -82,6 +83,7 @@ If time remains: pull the next P0 story (US-06 My Lists) into the sprint with te
 | Scrum Master | Aloys Trinker | Facilitates planning + review, removes blockers |
 | Developer | Paul Wiedermann | Implements US-01, US-02, US-03 (auth flow) |
 | Developer | Tim Sindilar | Implements US-05 (create list) + DB schema + project structure |
+| Developer | Laetitia Weben | Implements US-06 (My Lists page) + UI polish for Sprint 1 |
 
 ---
 

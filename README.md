@@ -14,6 +14,7 @@ ListMate lets a user create shopping lists, add items, mark them off while shopp
 | Scrum Master | Aloys Trinker |
 | Developer | Paul Wiedermann |
 | Developer | Tim Sindilar |
+| Developer | Laetitia Weben |
 
 **Stack Authority:** entire team.
 
