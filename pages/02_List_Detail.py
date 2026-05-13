@@ -6,6 +6,8 @@ import streamlit as st
 from auth import current_user, logout_user
 from db import get_conn
 
+CATEGORIES = ["Other", "Dairy", "Produce", "Bakery", "Meat", "Drinks", "Household"]
+
 st.set_page_config(page_title="List · ListMate", page_icon="📝")
 
 user = current_user()
@@ -142,9 +144,7 @@ with st.expander("➕ Add item", expanded=False):
         new_qty = st.text_input(
             "Quantity / unit (optional)", placeholder='e.g. "2x" or "500g"'
         )
-        new_cat = st.text_input(
-            "Category (optional)", placeholder='e.g. "Dairy"', value="Other"
-        )
+        new_cat = st.selectbox("Category", options=CATEGORIES, index=0)
         add_submitted = st.form_submit_button("Add item", use_container_width=True)
     if add_submitted:
         name = new_name.strip()
@@ -183,7 +183,7 @@ with get_conn() as conn:
         SELECT id, name, quantity, category, checked
         FROM items
         WHERE list_id = ?
-        ORDER BY position ASC
+        ORDER BY checked ASC, position ASC
         """,
         (list_id,),
     ).fetchall()
