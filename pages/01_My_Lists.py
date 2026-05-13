@@ -61,3 +61,6 @@ else:
         with st.container(border=True):
             st.subheader(lst["name"])
             st.caption(f"Last updated: {lst['last_updated']}")
+            if st.button("Open list", key=f"open_{lst['id']}", use_container_width=True):
+                st.session_state["active_list_id"] = lst["id"]
+                st.switch_page("pages/02_List_Detail.py")
