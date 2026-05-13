@@ -180,10 +180,12 @@ with st.expander("➕ Add item", expanded=False):
 with get_conn() as conn:
     items = conn.execute(
         """
-        SELECT id, name, quantity, category, checked
-        FROM items
-        WHERE list_id = ?
-        ORDER BY checked ASC, position ASC
+        SELECT i.id, i.name, i.quantity, i.category, i.checked,
+               i.added_by, u.username AS added_by_username
+        FROM items i
+        JOIN users u ON u.id = i.added_by
+        WHERE i.list_id = ?
+        ORDER BY i.checked ASC, i.position ASC
         """,
         (list_id,),
     ).fetchall()
@@ -195,7 +197,7 @@ else:
     st.caption(f"**{len(items)}** item(s) — {checked_count} checked off.")
 
     for item in items:
-        cols = st.columns([1, 8, 1])
+        cols = st.columns([1, 8, 1], vertical_alignment="center")
         with cols[0]:
             new_state = st.checkbox(
                 "checked",
@@ -229,7 +231,12 @@ else:
                 if item["category"] and item["category"] != "Other"
                 else ""
             )
-            st.markdown(f"{name_md}{qty}{cat}")
+            added_by = (
+                f" · _added by {item['added_by_username']}_"
+                if item["added_by"] != user["id"]
+                else ""
+            )
+            st.markdown(f"{name_md}{qty}{cat}{added_by}")
 
         with cols[2]:
             if st.button("🗑️", key=f"del_{item['id']}", help="Delete item"):
